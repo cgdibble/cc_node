@@ -2,7 +2,7 @@
   "name": "cc_node",
   "version": "1.0.0",
   "description": "NODE v of CC project",
-  "main": "index.js",
+  "main": "converter.js",
   "scripts": {
     "test": "jest --watch"
   },
@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/bnaebain/cc_node#readme",
   "dependencies": {
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "request": "^2.88.2",
+    "run-func": "^3.0.0"
   }
 }
