@@ -1,4 +1,4 @@
-const request = require("request")
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 class Conversion{
     constructor(from, to, amount) {
@@ -13,17 +13,14 @@ class Conversion{
     }
 
     // Method
-    converter() {
-        var url = ["https://data.fixer.io/api/convert?access_key=5224cc818d14737db40e2077cf38b610", 
+    async converter() {
+        let url = ["https://data.fixer.io/api/convert?access_key=5224cc818d14737db40e2077cf38b610", 
             "&from=", this.f, "&to=", this.t, "&amount=", this.a];
-        var url_string = url.join('');
-        request(url_string, {json: true}, (err, res, body) => {
-            if (err) {return console.log(err)};
-            const result = body.result;
-            console.log(result);
-        return result;
-        });
-}
+        let url_string = url.join('');
+        let result = await fetch(url_string, {type: 'json'})
+        //if (err) {return console.log(err)};
+        return await result.json();
+    }
 }
 
 class Symbols{
@@ -38,15 +35,14 @@ class Symbols{
     }
 
     // Method: Pulls list of supported symbols from API
-    list(){
-        var url = 'https://data.fixer.io/api/symbols?access_key=fab696bb4082dd825a4681f6be651707';
-        request(url, {json: true}, (err, body) => {
-            if (err) {return console.log(err)};
-            //var symb = Object.keys(body.symbols);
-            var symb = 'x';
-            console.log(symb);
-        return symb;
-        })
+    async list(){
+        let url = 'https://data.fixer.io/api/symbols?access_key=5224cc818d14737db40e2077cf38b610';
+        let result = await fetch(url, {type: 'json'})
+        //if (err) {return console.log(err)};
+        //let symb = Object.keys(body.symbols);
+        return await result.json();
+        //return symb;
+        
     }
 
     // Validation
@@ -63,10 +59,14 @@ let input_t = 'EUR';
 let input_a = 1200;
 
 let x = new Symbols(input_f, input_t);
-x.symbols;
+x.symbols.then((result)=> {
+   // console.log("X Symbols", result)
+});
 
 let y = new Conversion(input_f, input_t, input_a);
-y.result;
+y.result.then((result)=> {
+    console.log("y result", result)
+})
 
 
 
