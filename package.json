@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/bnaebain/cc_node#readme",
   "dependencies": {
+    "inquirer": "^8.2.2",
     "jest": "^27.5.1",
     "node-fetch": "^3.2.3",
     "run-func": "^3.0.0"
