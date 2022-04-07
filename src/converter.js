@@ -1,7 +1,7 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const inquirer = require('inquirer');
 
-async function converter(f, t, a) { // Converter Endpoint
+async function getConvertedAmount(f, t, a) { // Converter Endpoint
     let url = ["https://data.fixer.io/api/convert?access_key=5224cc818d14737db40e2077cf38b610", 
         "&from=", f, "&to=", t, "&amount=", a];
     let url_string = url.join('');
@@ -10,7 +10,7 @@ async function converter(f, t, a) { // Converter Endpoint
     return await result.json();
 }
 
-async function list(){ // Supported Symbols Endpoint
+async function getSymbolList(){ // Supported Symbols Endpoint
     let url = 'https://data.fixer.io/api/symbols?access_key=5224cc818d14737db40e2077cf38b610';
     let result = await fetch(url, {type: 'json'})
     //if (err) {return console.log(err)};
@@ -18,27 +18,27 @@ async function list(){ // Supported Symbols Endpoint
 }
 
 // Validation of input
-async function checker(list, f_str, t_str, amount){
-    let x = list.indexOf(f_str);
-    let y = list.indexOf(t_str);
-    if (x > 0 && y > 0) {
-        let c_amt = converter(f_str, t_str, amount);
+async function isoCheck(list, f_str, t_str, amount){
+    let originValid = list.indexOf(f_str);
+    let destinationValid = list.indexOf(t_str);
+    if (originValid > 0 && destinationValid > 0) {
+        let c_amt = getConvertedAmount(f_str, t_str, amount);
                 c_amt.then((result)=> {
                     console.log("Converted Amount is: ", result.result);
-                    return getProgram();
+                    return startProgram();
                 })
     }
-    if (x < 0 && y < 0) {
+    if (originValid < 0 && destinationValid < 0) {
         console.log("Neither input was a valid ISO code.");
-        return getConversion();
+        return startConversion();
     }
-    if (x < 0 && y > 0) {
+    if (originValid < 0 && destinationValid > 0) {
         console.log("Your origin currency ISO code is invalid");
-        return getConversion();
+        return startConversion();
     }
-    if (x > 0 && y < 0) {
+    if (originValid > 0 && destinationValid < 0) {
         console.log("Your destination currency ISO code is invalid");
-        return getConversion();
+        return startConversion();
     }
 }
 
@@ -48,7 +48,7 @@ function getKeyByValue(object, value) {
 
 console.log("Welcome to Brinae's Currency Converter!");
 
-const getProgram = () => {
+const startProgram = () => {
     inquirer
         .prompt([
             {
@@ -64,7 +64,7 @@ const getProgram = () => {
                 return getISO();
             }
             else if (answer.greeting == 'Convert a currency') {
-                return getConversion();
+                return startConversion();
             } 
             else return;
         });
@@ -77,18 +77,18 @@ const getISO = () => {
                 name: 'choose_iso',
                 message: 'What currency would you like?',
                 type: 'list',
-                choices: list_c,
+                choices: countryList,
             },
         ])
         .then(answer => {
             console.log(answer.choose_iso);
             let iso = getKeyByValue(dict, answer.choose_iso);
             console.log("Your currency ISO code is ", iso);
-            return getProgram();
+            return startProgram();
         })
 }
 
-const getConversion = () => {
+const startConversion = () => {
     inquirer
         .prompt([
             {
@@ -108,16 +108,15 @@ const getConversion = () => {
             },
         ])
         .then(answer => {
-            let valid = checker(list_s, answer.from_country, answer.to_country, answer.amount);
+            let valid = isoCheck(symbList, answer.from_country, answer.to_country, answer.amount);
         })
 }
 
-let y = list();
-y.then((result)=> {
+let symbolList = getSymbolList();
+symbolList.then((result)=> {
     dict = result.symbols;
-    ///console.log(dict);
-    list_c = Object.values(result.symbols);
-    list_s = Object.keys(result.symbols);
+    countryList = Object.values(result.symbols);
+    symbList = Object.keys(result.symbols);
 })
 
-let x = getProgram();
+let x = startProgram();
