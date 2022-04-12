@@ -1,33 +1,32 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const inquirer = require('inquirer');
 
-async function getConvertedAmount(f, t, a) { // Converter Endpoint
+async function getConvertedAmount(f, t, a) { // Converter Endpoint www.fixer.io
     let url = ["https://data.fixer.io/api/convert?access_key=5224cc818d14737db40e2077cf38b610", 
         "&from=", f, "&to=", t, "&amount=", a];
     let url_string = url.join('');
     let result = await fetch(url_string, {type: 'json'})
     //if (err) {return console.log(err)};
-    return await result.json();
+    let full_result = await result.json();
+    return full_result.result;
 }
 
-async function getSymbolList(){ // Supported Symbols Endpoint
+async function getSymbolList(){ // Supported Symbols Endpoint www.fixer.io
     let url = 'https://data.fixer.io/api/symbols?access_key=5224cc818d14737db40e2077cf38b610';
     let result = await fetch(url, {type: 'json'})
     //if (err) {return console.log(err)};
     return await result.json();
 }
 
-// Validation of input
-async function isoCheck(list, f_str, t_str, amount){
+
+async function isoCheck(list, f_str, t_str, amount){ // Validation of input
     let originValid = list.indexOf(f_str);
     let destinationValid = list.indexOf(t_str);
     if (originValid > 0 && destinationValid > 0) {
-        let c_amt = getConvertedAmount(f_str, t_str, amount);
-                c_amt.then((result)=> {
-                    console.log("Converted Amount is: ", result.result);
+        let c_amt = await getConvertedAmount(f_str, t_str, amount);
+                    console.log("Converted Amount is: ", c_amt.toFixed(2));
                     return startProgram();
-                })
-    }
+                }
     if (originValid < 0 && destinationValid < 0) {
         console.log("Neither input was a valid ISO code.");
         return startConversion();
@@ -42,7 +41,7 @@ async function isoCheck(list, f_str, t_str, amount){
     }
 }
 
-function getKeyByValue(object, value) {
+function getISOfromCountry(object, value) {
   return Object.keys(object).find(key => object[key] === value);
 }
 
@@ -68,8 +67,7 @@ const startProgram = () => {
             } 
             else return;
         });
-};
-
+}
 const getISO = () => {
     inquirer
         .prompt([
@@ -82,7 +80,7 @@ const getISO = () => {
         ])
         .then(answer => {
             console.log(answer.choose_iso);
-            let iso = getKeyByValue(dict, answer.choose_iso);
+            let iso = getISOfromCountry(dict, answer.choose_iso);
             console.log("Your currency ISO code is ", iso);
             return startProgram();
         })
@@ -119,4 +117,4 @@ symbolList.then((result)=> {
     symbList = Object.keys(result.symbols);
 })
 
-let x = startProgram();
+let start = startProgram();
