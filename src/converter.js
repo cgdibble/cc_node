@@ -41,11 +41,12 @@ async function isoCheck(list, f_str, t_str, amount){ // Validation of input
     }
 }
 
-function getISOfromCountry(object, value) {
-  return Object.keys(object).find(key => object[key] === value);
+// function getISOfromCountry(object, value) {
+//   return Object.keys(object).find(key => object[key] === value);
+// }
+function getIsoFromCurrencyName(currenciesByIsoCodes, currencyName) {
+  return Object.keys(currenciesByIsoCodes).find(key => currenciesByIsoCodes[key] === currencyName)
 }
-
-console.log("Welcome to Brinae's Currency Converter!");
 
 const startProgram = () => {
     inquirer
@@ -110,11 +111,16 @@ const startConversion = () => {
         })
 }
 
-let symbolList = getSymbolList();
-symbolList.then((result)=> {
-    dict = result.symbols;
-    countryList = Object.values(result.symbols);
-    symbList = Object.keys(result.symbols);
-})
+module.exports = {
+  getSymbolList,
+  startProgram,
+  getIsoFromCurrencyName,
+}
+// let symbolList = getSymbolList();
+// symbolList.then((result)=> {
+//     dict = result.symbols;
+//     countryList = Object.values(result.symbols);
+//     symbList = Object.keys(result.symbols);
+// })
 
-let start = startProgram();
+// let start = startProgram();
