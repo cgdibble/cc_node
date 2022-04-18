@@ -4,8 +4,8 @@
   "description": "NODE v of CC project",
   "main": "converter.js",
   "scripts": {
-    "test": "jest --watch",
-    "start": "index.js"
+    "start": "src/index.js",
+    "test": "jest --watch"
   },
   "repository": {
     "type": "git",

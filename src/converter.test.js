@@ -1,6 +1,5 @@
 console.log(`getIsoFromCurrencyName`, getIsoFromCurrencyName);
 const { getIsoFromCurrencyName } = require("./converter")
-
 describe('identify test', () => {
     describe.only('getISOfromCurrencyName()', () => {
         it('should return the USA ISO Code when given the appropriate currency', () => {
@@ -21,4 +20,23 @@ describe('identify test', () => {
         })
     })
 })
+
+
+console.log('getConvertedAmount', getConvertedAmount);
+const { getConvertedAmount } = require("./converter")
+describe('conversion test', () => {
+    describe.only('getConvertedAmount()', () => {
+        it('should connect to the Fixer.io API and return a float object for the converted amount', () => {
+            [from, to, amount] = ['USD', 'EUR', 1000];
+            const result = getConvertedAmount(from, to, amount)
+            expect(result).toBeInstanceOf(Number)
+        })
+        it('should not lead to errors', () => {
+            [from, to, amount] = ['USD', 'EUR', 1000];
+            const result = getConvertedAmount(from, to, amount)
+            expect(getErrors()).toBeFalsy();
+        })
+    })
+})
+
 
