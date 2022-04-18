@@ -1,3 +1,4 @@
+console.log(`getIsoFromCurrencyName`, getIsoFromCurrencyName);
 const { getIsoFromCurrencyName } = require("./converter")
 
 describe('identify test', () => {
