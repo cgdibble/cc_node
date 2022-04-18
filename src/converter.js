@@ -1,5 +1,6 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const inquirer = require('inquirer');
+const index = require('./index.js');
 
 async function getConvertedAmount(from, to, amt) { // Converter Endpoint www.fixer.io
     let url = ["https://data.fixer.io/api/convert?access_key=5224cc818d14737db40e2077cf38b610", 
@@ -46,6 +47,12 @@ function getIsoFromCurrencyName(currenciesByIsoCodes, currencyName){
 }
 
 const startProgram = () => {
+    let symbolList = getSymbolList();
+    symbolList.then((result)=> {
+        dict = result.symbols;
+        countryList = Object.values(result.symbols);
+        symbList = Object.keys(result.symbols);
+    })
     inquirer
         .prompt([
             {
@@ -78,7 +85,7 @@ const getISO = () => {
         ])
         .then(answer => {
             console.log(answer.choose_iso);
-            let iso = getISOfromCountry(dict, answer.choose_iso);
+            let iso = getIsoFromCurrencyName(dict, answer.choose_iso);
             console.log("Your currency ISO code is ", iso);
             return startProgram();
         })
