@@ -1,9 +1,9 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const inquirer = require('inquirer');
 
-async function getConvertedAmount(f, t, a) { // Converter Endpoint www.fixer.io
+async function getConvertedAmount(from, to, amt) { // Converter Endpoint www.fixer.io
     let url = ["https://data.fixer.io/api/convert?access_key=5224cc818d14737db40e2077cf38b610", 
-        "&from=", f, "&to=", t, "&amount=", a];
+        "&from=", from, "&to=", to, "&amount=", amt];
     let url_string = url.join('');
     let result = await fetch(url_string, {type: 'json'})
     //if (err) {return console.log(err)};
@@ -41,11 +41,9 @@ async function isoCheck(list, f_str, t_str, amount){ // Validation of input
     }
 }
 
-function getISOfromCountry(object, value) {
-  return Object.keys(object).find(key => object[key] === value);
+function getIsoFromCurrencyName(currenciesByIsoCodes, currencyName){
+    return Object.keys(currenciesByIsoCodes).find(key => currenciesByIsoCodes[key] === currencyName);
 }
-
-console.log("Welcome to Brinae's Currency Converter!");
 
 const startProgram = () => {
     inquirer
@@ -110,11 +108,9 @@ const startConversion = () => {
         })
 }
 
-let symbolList = getSymbolList();
-symbolList.then((result)=> {
-    dict = result.symbols;
-    countryList = Object.values(result.symbols);
-    symbList = Object.keys(result.symbols);
-})
+module.exports = {
+    getIsoFromCurrencyName,
+    startProgram,
+    getSymbolList,
+}
 
-let start = startProgram();
