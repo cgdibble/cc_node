@@ -1,14 +1,16 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const fetch = require("node-fetch")
 const inquirer = require('inquirer');
-const index = require('./index.js');
 
-async function getConvertedAmount(from, to, amt) { // Converter Endpoint www.fixer.io
+async function getConvertedAmount(fetch, from, to, amt) { // Converter Endpoint www.fixer.io
     let url = ["https://data.fixer.io/api/convert?access_key=5224cc818d14737db40e2077cf38b610", 
         "&from=", from, "&to=", to, "&amount=", amt];
     let url_string = url.join('');
     let result = await fetch(url_string, {type: 'json'})
+    console.log(`result`, result);
     //if (err) {return console.log(err)};
     let full_result = await result.json();
+    console.log(`full_result`, full_result);
+    console.log(`full_result.result`,typeof full_result.result);
     return full_result.result;
 }
 
@@ -117,6 +119,7 @@ const startConversion = () => {
 
 module.exports = {
     getIsoFromCurrencyName,
+    getConvertedAmount,
     startProgram,
     getSymbolList,
 }

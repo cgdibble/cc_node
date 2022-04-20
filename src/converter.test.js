@@ -1,7 +1,10 @@
-console.log(`getIsoFromCurrencyName`, getIsoFromCurrencyName);
-const { getIsoFromCurrencyName } = require("./converter")
+const { getIsoFromCurrencyName, getConvertedAmount } = require("./converter")
+
+const fetch = require("node-fetch")
+jest.mock("node-fetch")
+
 describe('identify test', () => {
-    describe.only('getISOfromCurrencyName()', () => {
+    describe('getISOfromCurrencyName()', () => {
         it('should return the USA ISO Code when given the appropriate currency', () => {
             const currencyNameByIsoCodes ={
                 "USD" : "United States Dollar"
@@ -21,19 +24,21 @@ describe('identify test', () => {
     })
 })
 
-
-console.log('getConvertedAmount', getConvertedAmount);
-const { getConvertedAmount } = require("./converter")
 describe('conversion test', () => {
-    describe.only('getConvertedAmount()', () => {
-        it('should connect to the Fixer.io API and return a float object for the converted amount', () => {
+    describe('getConvertedAmount()', () => {
+        it.only('should connect to the Fixer.io API and return a float object for the converted amount', async () => {
             [from, to, amount] = ['USD', 'EUR', 1000];
-            const result = getConvertedAmount(from, to, amount)
-            expect(result).toBeInstanceOf(Number)
+            const expectation = "1234.667"
+            fetch.mockResolvedValue({
+              json: jest.fn().mockResolvedValue({result: expectation})
+            })
+            const result = await getConvertedAmount(from, to, amount)
+            expect(result).toEqual(expectation)
         })
-        it('should not lead to errors', () => {
+        
+        it('should not lead to errors', async () => {
             [from, to, amount] = ['USD', 'EUR', 1000];
-            const result = getConvertedAmount(from, to, amount)
+            const result = await getConvertedAmount(from, to, amount)
             expect(getErrors()).toBeFalsy();
         })
     })
