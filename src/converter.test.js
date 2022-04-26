@@ -5,7 +5,7 @@ jest.mock("node-fetch")
 
 const inquire = require("inquirer")
 jest.mock('inquirer', () => {
-  return { prompt: jest.fn() };
+  return { prompt: jest.fn().mockResolvedValue({ answer: {greeting: "answer"}}) };
 });
 
 describe('identify test', () => {
@@ -32,29 +32,46 @@ describe('identify test', () => {
     describe('isoCheck()', () => {
         const objectList = ["USD", "CAD", "EUR"]
         const amount = 1000
+        it.only('should get converted amount when from and to are both provided on the input list', async () => {
+          // mock call in getConverstion Amount
+          // assert mock was called with the from and to values
+          fetch.mockResolvedValueOnce({
+            json: jest.fn().mockResolvedValue({ result: 2.2 })
+          })
+          fetch.mockResolvedValueOnce({
+            json: jest.fn().mockResolvedValue({ symbols: {} })
+          })
+          const expectedMockArgs = []
+          const f_country = "USD"
+          const t_country = "CAD"
+          const result = await isoCheck(objectList, f_country, t_country, amount)
+          console.log(`result returned in test`, result);
+          expect(fetch).toHaveBeenCalledWith(expectedMockArgs)
+        })
+        
         it('should validate both inputs are part of the object array returned by the API', async () => {
             const f_country = "USD"
             const t_country = "CAD"
             const result = await isoCheck(objectList, f_country, t_country, amount)
-            expect(startProgram).toHaveBeenCalled;
+            expect(startProgram).toHaveBeenCalled();
         })
         it('should validate that neither input is in the object array returned by the API', () => {
             const f_country = "NaC"            
             const t_country = "NaC"
             const result = isoCheck(objectList, f_country, t_country, amount)
-            expect(startConversion).toHaveBeenCalled;
+            expect(startConversion).toHaveBeenCalled();
         })
         it('should validate that the from country is not in the object array returned by the API', () => {
             const f_country = "NaC"            
             const t_country = "EUR"
             const result = isoCheck(objectList, f_country, t_country, amount)
-            expect(startConversion).toHaveBeenCalled;
+            expect(startConversion).toHaveBeenCalled();
         })
         it('should validate that the to country is not in the object array returned by the API', () => {
             const f_country = "USD"            
             const t_country = "NaC"
             const result = isoCheck(objectList, f_country, t_country, amount)
-            expect(startConversion).toHaveBeenCalled;
+            expect(startConversion).toHaveBeenCalled();
         })
     })
 })
@@ -79,7 +96,7 @@ describe('inquirer test', () => {
     console.log('startProgram', startProgram)
     describe('startProgram()', () => {
         it('should start the symbolList function to pull the data from the API', () => {
-            expect(getSymbolList).toHaveBeenCalled;
+            expect(getSymbolList).toHaveBeenCalled();
         })
         it ('should call a function based on the response', async () => {
             inquirer.prompt.mockResolvedValueOnce('Start ISO');
