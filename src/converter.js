@@ -27,9 +27,9 @@ async function isoCheck(list, f_str, t_str, amount){ // Validation of input
     let destinationValid = list.indexOf(t_str);
     if (originValid > 0 && destinationValid > 0) {
         let c_amt = await getConvertedAmount(f_str, t_str, amount);
-                    console.log("Converted Amount is: ", c_amt.toFixed(2), t_str);
-                    return startProgram();
-                }
+            console.log("Converted Amount is: ", c_amt.toFixed(2), t_str);
+            return startProgram();
+        }
     if (originValid < 0 && destinationValid < 0) {
         console.log("Neither input was a valid ISO code.");
         return startConversion();
@@ -66,13 +66,14 @@ const startProgram = async () => {
         const getIso = await inquirer.prompt(getISO(countryList))
         const iso = getIsoFromCurrencyName(dict, getIso.choose_iso);
         console.log("Your currency ISO code is ", iso);
-        return startProgram;
+        return startProgram();
     }
     if (answer.greeting === 'Convert a currency') {
         let inq = startConversion();
         const conversion_from = await inquirer.prompt(inq[0])
         const conversion_to = await inquirer.prompt(inq[1])
         const conversion_amt = await inquirer.prompt(inq[2])
+        console.log(conversion_from, conversion_to, conversion_amt)
         return isoCheck(symbList, conversion_from, conversion_to, conversion_amt);
     } else {
         return
@@ -88,8 +89,7 @@ const getISO = (countryList) => {
     }
 }
 
-
-const startConversion = async () => {
+const startConversion = () => {
     const fromC = {
         name: 'from_country',
         message: 'Please enter the ISO code of your origin currency.',
@@ -105,7 +105,7 @@ const startConversion = async () => {
         message: 'Please enter the amount to convert.',
         type: 'number',
     }
-    return await [fromC, toC, amt]
+    return  [fromC, toC, amt]
 }
 
 module.exports = {
