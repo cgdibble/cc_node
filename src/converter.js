@@ -17,6 +17,7 @@ async function getConvertedAmount(from, to, amt) { // Converter Endpoint www.fix
 async function getSymbolList(){ // Supported Symbols Endpoint www.fixer.io
     let url = 'https://data.fixer.io/api/symbols?access_key=5224cc818d14737db40e2077cf38b610';
     let result = await fetch(url, {type: 'json'})
+    console.log(`result`, result);
     //if (err) {return console.log(err)};
     return await result.json();
 }
@@ -25,22 +26,25 @@ async function getSymbolList(){ // Supported Symbols Endpoint www.fixer.io
 async function isoCheck(list, f_str, t_str, amount){ // Validation of input
     let originValid = list.indexOf(f_str);
     let destinationValid = list.indexOf(t_str);
-    if (originValid > 0 && destinationValid > 0) {
+    try {
+      if (originValid >= 0 && destinationValid >= 0) {
         let c_amt = await getConvertedAmount(f_str, t_str, amount);
-            console.log("Converted Amount is: ", c_amt.toFixed(2), t_str);
-            return startProgram();
-        }
-    if (originValid < 0 && destinationValid < 0) {
-        console.log("Neither input was a valid ISO code.");
-        return startConversion();
-    }
-    if (originValid < 0 && destinationValid > 0) {
-        console.log("Your origin currency ISO code is invalid");
-        return startConversion();
-    }
-    if (originValid > 0 && destinationValid < 0) {
-        console.log("Your destination currency ISO code is invalid");
-        return startConversion();
+        console.log("Converted Amount is: ", c_amt.toFixed(2), t_str);
+        const startResult = await startProgram();
+        console.log(`startResult`, startResult);
+        return startResult
+      } else if (originValid < 0 && destinationValid < 0) {
+          console.log("Neither input was a valid ISO code.");
+          return startConversion();
+      } else if (originValid < 0 && destinationValid > 0) {
+          console.log("Your origin currency ISO code is invalid");
+          return startConversion();
+      } else if (originValid > 0 && destinationValid < 0) {
+          console.log("Your destination currency ISO code is invalid");
+          return startConversion();
+      }
+    } catch (error) {
+      console.log(`isoCheck::: error.toString()`, error.toString());      
     }
 }
 
@@ -49,35 +53,38 @@ function getIsoFromCurrencyName(currenciesByIsoCodes, currencyName){
 }
 
 const startProgram = async () => {
-    let symbolList = getSymbolList();
-    symbolList.then((result)=> {
-        dict = result.symbols;
-        countryList = Object.values(result.symbols);
-        symbList = Object.keys(result.symbols);
-    })
-    const answer = await inquirer.prompt({
-              name: 'greeting',
-              message: 'What would you like to do?',
-              type: 'list',
-              choices: ['Look up a currency ISO code', 'Convert a currency', 'Exit']
-    })
-    
-    if (answer.greeting === 'Look up a currency ISO code') {
-        const getIso = await inquirer.prompt(getISO(countryList))
-        const iso = getIsoFromCurrencyName(dict, getIso.choose_iso);
-        console.log("Your currency ISO code is ", iso);
-        return startProgram();
-    }
-    if (answer.greeting === 'Convert a currency') {
-        let inq = startConversion();
-        const conversion_from = await inquirer.prompt(inq[0])
-        const conversion_to = await inquirer.prompt(inq[1])
-        const conversion_amt = await inquirer.prompt(inq[2])
-        console.log(conversion_from, conversion_to, conversion_amt)
-        return isoCheck(symbList, conversion_from, conversion_to, conversion_amt);
-    } else {
-        return
-    }
+  let symbolList = await getSymbolList();
+  let countryList = Object.values(symbolList.symbols);
+  let symbList = Object.keys(symbolList.symbols);
+  console.log(`dict`, dict);
+  // symbolList.then((result)=> {
+  //   console.log(`result getSymbol List`, result);
+  //   dict = result.symbols;
+  //   countryList = Object.values(result.symbols);
+  //   symbList = Object.keys(result.symbols);
+  // })
+  console.log(`inquirer`, inquirer);
+  const answer = await inquirer.prompt({
+    name: 'greeting',
+    message: 'What would you like to do?',
+    type: 'list',
+    choices: ['Look up a currency ISO code', 'Convert a currency', 'Exit']
+  })
+  console.log(`answer`, answer);
+  if (answer.greeting === 'Look up a currency ISO code') {
+      const getIso = await inquirer.prompt(getISO(countryList))
+      const iso = getIsoFromCurrencyName(symbolList, getIso.choose_iso);
+      console.log("Your currency ISO code is ", iso);
+      return startProgram();
+  } else if (answer.greeting === 'Convert a currency') {
+      let inq = startConversion();
+      const conversion_from = await inquirer.prompt(inq[0])
+      const conversion_to = await inquirer.prompt(inq[1])
+      const conversion_amt = await inquirer.prompt(inq[2])
+      return isoCheck(symbList, conversion_from, conversion_to, conversion_amt);
+  } else {
+    console.log("in the else here");
+    return "I'm a dummy response"
 }
 
 const getISO = (countryList) => {
@@ -105,7 +112,9 @@ const startConversion = () => {
         message: 'Please enter the amount to convert.',
         type: 'number',
     }
-    return  [fromC, toC, amt]
+
+    return [fromC, toC, amt]
+
 }
 
 module.exports = {
