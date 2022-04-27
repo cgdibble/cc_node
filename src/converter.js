@@ -85,7 +85,6 @@ const startProgram = async () => {
   } else {
     console.log("in the else here");
     return "I'm a dummy response"
-  }
 }
 
 const getISO = (countryList) => {
@@ -96,7 +95,6 @@ const getISO = (countryList) => {
         choices: countryList,
     }
 }
-
 
 const startConversion = () => {
     const fromC = {
@@ -114,7 +112,9 @@ const startConversion = () => {
         message: 'Please enter the amount to convert.',
         type: 'number',
     }
+
     return [fromC, toC, amt]
+
 }
 
 module.exports = {

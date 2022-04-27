@@ -54,6 +54,7 @@ describe('identify test', () => {
             const t_country = "CAD"
             const result = await isoCheck(objectList, f_country, t_country, amount)
             expect(startProgram).toHaveBeenCalled();
+
         })
         it('should validate that neither input is in the object array returned by the API', () => {
             const f_country = "NaC"            
