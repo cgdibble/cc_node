@@ -3,7 +3,7 @@ const { getIsoFromCurrencyName, getConvertedAmount, isoCheck, startProgram, star
 const fetch = require("node-fetch")
 jest.mock("node-fetch")
 
-const inquire = require("inquirer")
+const inquirer = require("inquirer")
 jest.mock('inquirer', () => {
   return { prompt: jest.fn() };
 });
@@ -66,13 +66,21 @@ describe('conversion test', () => {
     })
 })
 
-describe('inquirer test', () => {
-    console.log('startProgram', startProgram)
-    describe('startProgram()', () => {
-        it ('should call a function based on the response', async () => {
-            inquirer.prompt.mockResolvedValueOnce('Start ISO');
-            const actual = await getAnswers('Look up a currency ISO code');
-            expect(actual).toBe('Start ISO');
-        })
-    })
-})
+// describe('inquirer test', () => {
+//     console.log('startProgram', startProgram)
+//     describe('startProgram()', () => {
+//         it ('should call a function based on the response', async () => {
+//             const expectation = {
+//                 'USD': 'United States Dollar',
+//                 'EUR': 'Euro',
+//                 'CAD': 'Canadian Dollar'
+//             }
+//             fetch.mockResolvedValue({
+//                 json: jest.fn().mockResolvedValue({ result: expectation})
+//             })
+//             inquirer.prompt.mockResolvedValueOnce('Test');
+//             const actual = await startProgram();
+//             expect(actual).toBe('Test');
+//         })
+//     })
+// })

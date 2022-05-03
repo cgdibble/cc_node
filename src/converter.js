@@ -78,7 +78,7 @@ const startProgram = async () => {
         return isoCheck(symbList, conversionFrom[0], conversionTo[0], conversionAmt[0]);
   } else {
     console.log("in the else here");
-    return "I'm a dummy response"
+    return
     }
 }
 
