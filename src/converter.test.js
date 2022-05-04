@@ -62,25 +62,77 @@ describe('conversion test', () => {
             })
             const result = await getConvertedAmount(from, to, amount)
             expect(result).toEqual(expectation)
+          })
         })
+      })
+      
+      describe('inquirer test', () => {
+        console.log('startProgram', startProgram)
+        describe.only('startProgram()', () => {
+
+          beforeEach(() => {
+            fetch.mockResolvedValue({
+                json: jest.fn().mockResolvedValue({ symbols: {} })
+            })
+            inquirer.prompt.mockResolvedValue({ greeting: "Exit" })
+          })
+
+          it.skip('should call a function based on the response', async () => {
+            const expectation = {
+              'USD': 'United States Dollar',
+              'EUR': 'Euro',
+              'CAD': 'Canadian Dollar'
+            }
+            fetch.mockResolvedValue({
+              json: jest.fn().mockResolvedValue({ result: expectation})
+            })
+            inquirer.prompt.mockResolvedValueOnce('Test');
+            const actual = await startProgram();
+            expect(actual).toBe('Test');
+          })
+          
+          it('should get the symbol list', async () => {
+            await startProgram()
+            expect(fetch).toBeCalledWith(expect.stringContaining("/api/symbols"), {type: "json"})
+          })
+
+          it('should prompt the user with options to convert, lookup, or exit', async () => {
+            await startProgram()
+            expect(inquirer.prompt).toBeCalledWith({
+              name: "greeting",
+              choices: ['Look up a currency ISO code', 'Convert a currency', 'Exit'],
+              type: "list",
+              message: 'What would you like to do?',
+            })
+          })
+
+          it('should execute the lookup iso code flow', async () => {
+            inquirer.prompt.mockResolvedValueOnce({ greeting: "Exit" })
+
+            await startProgram()
+            /**
+             * get symbolist
+             * prompt -> lookup greeting
+             *  prompt -> get iso
+             *  getIsoFromCurrencyName
+             * reruns start program
+             *  -> getsymbollist
+             *  -> prompt -> exit
+             */
+            // Start with the expectation!
+          })
+
+          it('should execute conversion flow', async () => {
+            
+          })
+
+          it('should bail out if exit flow selected', async () => {
+            
+          })
     })
 })
 
-// describe('inquirer test', () => {
-//     console.log('startProgram', startProgram)
-//     describe('startProgram()', () => {
-//         it ('should call a function based on the response', async () => {
-//             const expectation = {
-//                 'USD': 'United States Dollar',
-//                 'EUR': 'Euro',
-//                 'CAD': 'Canadian Dollar'
-//             }
-//             fetch.mockResolvedValue({
-//                 json: jest.fn().mockResolvedValue({ result: expectation})
-//             })
-//             inquirer.prompt.mockResolvedValueOnce('Test');
-//             const actual = await startProgram();
-//             expect(actual).toBe('Test');
-//         })
-//     })
-// })
+// DRY
+// - shared mocks and such/before/aftereach
+// fall throughs (isoCheck)
+// 

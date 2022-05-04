@@ -21,7 +21,6 @@ async function getSymbolList(){ // Supported Symbols Endpoint www.fixer.io
     return await result.json();
 }
 
-
 async function isoCheck(list, f_str, t_str, amount){ // Validation of input
     let originValid = list.indexOf(f_str)
     let destinationValid = list.indexOf(t_str);
@@ -51,23 +50,29 @@ function getIsoFromCurrencyName(currenciesByIsoCodes, currencyName){
 }
 
 const startProgram = async () => {
+  // prep
   let symbolList = await getSymbolList();
   let countryList = Object.values(symbolList.symbols);
   let symbList = Object.keys(symbolList.symbols);
+
+  // prompt
   const answer = await inquirer.prompt({
     name: 'greeting',
     message: 'What would you like to do?',
     type: 'list',
     choices: ['Look up a currency ISO code', 'Convert a currency', 'Exit']
   })
+  // react
   if (answer.greeting === 'Look up a currency ISO code') {
+    //  react: lookup
       const getIso = await inquirer.prompt(chooseCurrencyCountry(countryList))
       chosenCountry = Object.values(getIso)
       chosenCountry = chosenCountry[0]
       const iso = getIsoFromCurrencyName(symbolList.symbols, chosenCountry);
       console.log("Your currency ISO code is ", iso);
       return startProgram();
-  } else if (answer.greeting === 'Convert a currency') {
+    } else if (answer.greeting === 'Convert a currency') {
+    //  react:convert
         let inq = startConversion();
         const conversion_from = await inquirer.prompt(inq[0])
         const conversion_to = await inquirer.prompt(inq[1])
@@ -77,9 +82,10 @@ const startProgram = async () => {
         conversionAmt = Object.values(conversion_amt)  
         return isoCheck(symbList, conversionFrom[0], conversionTo[0], conversionAmt[0]);
   } else {
+    //  react:default
     console.log("in the else here");
     return
-    }
+  }
 }
 
 const chooseCurrencyCountry = (countryList) => {
